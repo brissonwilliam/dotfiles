@@ -334,7 +334,7 @@ if has('nvim')
     nnoremap <C-f> :NvimTreeFindFileToggle<CR>
 
     " ai autocomplete
-    nnoremap <Space>c :CopilotChatToggle<CR>
+    nnoremap <Space>o :CopilotChatToggle<CR>
     nnoremap <Space><Esc> :CopilotChatStop<CR>
 
     " nnoremap <Space>e :Copilot enable<CR>

@@ -18,7 +18,8 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
--- keybinds
+
+-- KEYBINDS MAP
 local function goErrCheck()
     vim.api.nvim_feedkeys("iif err != nil { return err }<ESC>", 'n', false)
 end
@@ -317,13 +318,12 @@ local plugins = {
             },
             window = {
                 -- layout = 'float',
-                width = 80,         -- Fixed width in columns
-                height = 20,        -- Fixed height in rows
+                width = 100,        -- Fixed width in columns
+                height = 40,        -- Fixed height in rows
                 border = 'rounded', -- 'single', 'double', 'rounded', 'solid'
                 title = '🤖 AI Assistant',
-                zindex = 100,       -- Ensure window stays on top
+                -- zindex = 100,       -- Ensure window stays on top
             },
-
             headers = {
                 user = '👺 You: ',
                 assistant = '🤖 Copilot: ',
@@ -331,6 +331,8 @@ local plugins = {
             },
             separator = '━━',
             show_folds = false, -- Disable folding for cleaner look
+            sticky = {"Current buffer is #buffer", "Open buffers are #buffers", "Files: #glob"}
+            -- auto_insert_mode = true, -- broken right now
         },
     },
     -- ############ DASHBOARD ALPHA ##################
@@ -358,7 +360,16 @@ local plugins = {
     -- nicer input and select visuals
     {
         'stevearc/dressing.nvim',
-        opts = {},
+        opts = {
+            input = {
+                border = "rounded",
+                relative = "editor",
+                width = 60,
+                win_options = {
+                    winhighlight = "Normal:Normal,FloatBorder:FloatBorder",
+                },
+            },
+        },
     },
 
     -- ############ COLORSCHEMES / THEMES ##################
