@@ -337,6 +337,7 @@ if has('nvim')
     nnoremap <Space>o :CopilotChatToggle<CR>
     nnoremap <Space><Esc> :CopilotChatStop<CR>
 
+
     " nnoremap <Space>e :Copilot enable<CR>
     " imap <silent><script><expr> <C-a> copilot#Accept("\<CR>")
     " let g:copilot_no_tab_map = v:true
