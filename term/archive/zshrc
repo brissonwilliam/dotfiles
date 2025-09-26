@@ -1,0 +1,39 @@
+HISTFILE=~/.histfile
+HISTSIZE=5000
+SAVEHIST=10000
+setopt extendedglob nomatch
+unsetopt autocd beep
+bindkey -v
+
+# my custom aliases
+alias ls='ls --color=auto'
+alias la='ls --color=auto -ah'
+alias l='ls --color=auto -lh'
+alias ll='ls --color=auto -lah'
+
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+alias n='nvim'
+
+alias yo='git status'
+alias yoc='git add . && git commit'
+
+
+# export env vars
+export WEB_ADDRESS=:8090
+
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+
+export PATH=$PATH:/usr/local/nvim/bin
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$HOME/go/bin
+
+# local file for secrets not to push
+source ~/.localrc
+
+# start starship
+eval "$(starship init zsh)"
+

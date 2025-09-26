@@ -1,0 +1,120 @@
+#shell = {program = "wsl.exe", args = ["--cd ~"]}
+
+[window]
+opacity = 1.0
+title = "terminal"
+startup_mode = "Windowed"
+dimensions = { columns = 150, lines = 45 }
+dynamic_title = false
+padding = {x=0, y=0}
+
+[font]
+normal = { family = "IosevkaCustomMono" }
+size = 11
+
+[cursor]
+# style = { shape = "Beam", blinking = "On" }
+
+[keyboard]
+bindings = [
+	{ key = "Space", mods = "Control", chars = "\u0000" },
+	{ key = "m", mods = "Control", chars = "¤" },
+	{key = "Enter", mods="Alt", action = "ToggleFullscreen"},
+	{key = "j", mods="Alt",  mode="AppCursor", chars="\u001bOB"},
+	{key = "j", mods="Alt",  mode="~AppCursor", chars="\u001b[B"},
+	{key = "k", mods="Alt",  mode="AppCursor", chars="\u001bOA"},
+	{key = "k", mods="Alt",  mode="~AppCursor", chars="\u001b[A"}
+]
+
+[terminal]
+osc52="CopyPaste"
+
+# theme copy / pasta don't put configs under here
+
+#	Colors (Ayu Dark)
+# [colors.primary]
+# background = '#0A0E14'
+# foreground = '#B3B1AD'
+# 
+# [colors.normal]
+# black   = '#01060E'
+# red     = '#EA6C73'
+# green   = '#91B362'
+# yellow  = '#F9AF4F'
+# blue    = '#53BDFA'
+# magenta = '#FAE994'
+# cyan    = '#90E1C6'
+# white   = '#C7C7C7'
+# 
+# [colors.bright]
+# black   = '#686868'
+# red     = '#F07178'
+# green   = '#C2D94C'
+# yellow  = '#FFB454'
+# blue    = '#59C2FF'
+# magenta = '#FFEE99'
+# cyan    = '#95E6CB'
+# white   = '#FFFFFF'
+
+
+# gruvbox
+
+#[colors.primary]
+#background = '#282828'
+#foreground = '#fbf1c7'
+#
+#[colors.normal]
+#black = '#1d2021'
+#red = '#cc241d'
+#green = '#98971a'
+#yellow = '#d79921'
+#blue = '#458588'
+#magenta = '#b16286'
+#cyan = '#689d6a'
+#white = '#a89984'
+#
+#[colors.bright]
+#black = '#928374'
+#red = '#fb4934'
+#green = '#b9bb26'
+#yellow = '#fabd2f'
+#blue = '#83a598'
+#magenta = '#d3869b'
+#cyan = '#8ec07c'
+#white = '#ebdbb2'
+
+# copy of kitty colors from source code
+# https://github.com/kovidgoyal/kitty/blob/master/kitty/colors.c
+
+[colors.primary]
+#dark blue
+#background = '#090b0f'
+
+# dark bg
+background = '#100d0a'
+# soft blue 
+# background = '#1c1f23'
+# soft orange
+# background = '#23211c'
+foreground = '#dddddd'
+
+[colors.normal]
+black = '#000000'
+red = '#cc0403'
+green = '#19cb00'
+yellow = '#cecb00'
+blue = '#0d73cc'
+magenta = '#cb1ed1'
+cyan = '#0dcdcd'
+white = '#dddddd'
+
+[colors.bright]
+black = '#767676'
+red = '#f2201f'
+green = '#23fd00'
+yellow = '#fffd00'
+blue = '#1a8fff'
+magenta = '#fd28ff'
+cyan = '#14ffff'
+white = '#ffffff'
+

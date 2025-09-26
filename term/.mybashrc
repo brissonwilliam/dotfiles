@@ -1,0 +1,247 @@
+#/bin/bash
+
+# Make sure to source this shite in ~/.bashrc
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|xterm-ghostty|*-256color|xterm-kitty) color_prompt=yes;;
+esac
+
+# ssh-agent agent ssh keys
+eval $(keychain --eval --agents ssh 2>/dev/null)
+
+# load secrets
+secretsPath="$HOME/myenv/secrets/secrets.rc"
+if [ -f $secretsPath ]; then
+    echo "Loaded secrets"
+    source "$secretsPath"
+fi
+
+# Force add ssh keys
+load_ssh_ident() {
+    if ! ssh-add -l | grep -q "$USER@$HOSTNAME"; then
+        echo 
+        echo "############"
+        echo "Did not find ssh identity in agent"
+
+        keys=$(ls -A ~/.ssh/ | grep "id-$HOST" | grep -v ".pub" | sed "s|^|$HOME/.ssh/|")
+        echo "Found keys $keys"
+
+        echo "Loading keys in agent (prompting for passphrases)"
+        ssh-add $keys
+
+        echo "############"
+        echo
+    fi
+}
+
+# host specific overrides
+if [ $HOSTNAME = "macbookm3" ]; then
+    echo "Hello mister macbookm3!"
+    export PATH="/opt/homebrew/bin:$PATH"
+    export BASH_SILENCE_DEPRECATION_WARNING=1
+fi
+
+#if [ $HOSTNAME = "mfsbuilds" ]; then
+#    load_ssh_ident
+#    alias mc_server="sudo su mc_server -c '/bin/bash'" 
+#fi
+
+# Foreground colors
+# Foreground colors (descriptive names)
+# Foreground colors
+# Foreground colors (descriptive names)
+FG_BLACK='\[\033[38;5;0m\]'
+FG_MAROON='\[\033[38;5;1m\]'
+FG_GREEN='\[\033[38;5;2m\]'
+FG_OLIVE='\[\033[38;5;3m\]'
+FG_NAVY='\[\033[38;5;4m\]'
+FG_PURPLE='\[\033[38;5;5m\]'
+FG_TEAL='\[\033[38;5;6m\]'
+FG_SILVER='\[\033[38;5;7m\]'
+FG_GREY='\[\033[38;5;8m\]'
+FG_RED='\[\033[38;5;9m\]'
+FG_LIME='\[\033[38;5;10m\]'
+FG_YELLOW='\[\033[38;5;11m\]'
+FG_BLUE='\[\033[38;5;12m\]'
+FG_FUCHSIA='\[\033[38;5;13m\]'
+FG_AQUA='\[\033[38;5;14m\]'
+FG_WHITE='\[\033[38;5;15m\]'
+FG_BRIGHT_BLACK='\[\033[38;5;16m\]'
+FG_BRIGHT_RED='\[\033[38;5;196m\]'
+FG_BRIGHT_GREEN='\[\033[38;5;46m\]'
+FG_BRIGHT_YELLOW='\[\033[38;5;226m\]'
+FG_BRIGHT_BLUE='\[\033[38;5;21m\]'
+FG_BRIGHT_MAGENTA='\[\033[38;5;201m\]'
+FG_BRIGHT_CYAN='\[\033[38;5;51m\]'
+FG_BRIGHT_WHITE='\[\033[38;5;231m\]'
+FG_ORANGE='\[\033[38;5;208m\]'
+FG_PINK='\[\033[38;5;213m\]'
+FG_LIGHT_BLUE='\[\033[38;5;117m\]'
+FG_LIGHT_GREEN='\[\033[38;5;120m\]'
+FG_LIGHT_YELLOW='\[\033[38;5;228m\]'
+FG_LIGHT_MAGENTA='\[\033[38;5;207m\]'
+FG_LIGHT_CYAN='\[\033[38;5;159m\]'
+FG_LIGHT_GREY='\[\033[38;5;250m\]'
+
+# Background colors (descriptive names)
+BG_BLACK='\[\e[48;5;0m\]'
+BG_MAROON='\[\e[48;5;1m\]'
+BG_GREEN='\[\e[48;5;2m\]'
+BG_OLIVE='\[\e[48;5;3m\]'
+BG_NAVY='\[\e[48;5;4m\]'
+BG_PURPLE='\[\e[48;5;5m\]'
+BG_TEAL='\[\e[48;5;6m\]'
+BG_SILVER='\[\e[48;5;7m\]'
+BG_GREY='\[\e[48;5;8m\]'
+BG_RED='\[\e[48;5;9m\]'
+BG_LIME='\[\e[48;5;10m\]'
+BG_YELLOW='\[\e[48;5;11m\]'
+BG_BLUE='\[\e[48;5;12m\]'
+BG_FUCHSIA='\[\e[48;5;13m\]'
+BG_AQUA='\[\e[48;5;14m\]'
+BG_WHITE='\[\e[48;5;15m\]'
+BG_BRIGHT_BLACK='\[\e[48;5;16m\]'
+BG_BRIGHT_RED='\[\e[48;5;196m\]'
+BG_BRIGHT_GREEN='\[\e[48;5;46m\]'
+BG_BRIGHT_YELLOW='\[\e[48;5;226m\]'
+BG_BRIGHT_BLUE='\[\e[48;5;21m\]'
+BG_BRIGHT_MAGENTA='\[\e[48;5;201m\]'
+BG_BRIGHT_CYAN='\[\e[48;5;51m\]'
+BG_BRIGHT_WHITE='\[\e[48;5;231m\]'
+BG_ORANGE='\[\e[48;5;208m\]'
+BG_PINK='\[\e[48;5;213m\]'
+BG_LIGHT_BLUE='\[\e[48;5;117m\]'
+BG_LIGHT_GREEN='\[\e[48;5;120m\]'
+BG_LIGHT_YELLOW='\[\e[48;5;228m\]'
+BG_LIGHT_MAGENTA='\[\e[48;5;207m\]'
+BG_LIGHT_CYAN='\[\e[48;5;159m\]'
+BG_LIGHT_GREY='\[\e[48;5;250m\]'
+
+# Reset
+RESET='\[\033[0m\]'
+
+# PS1 prompt
+parse_git_branch() {
+    # redirect errors to null
+    git rev-parse --abbrev-ref HEAD 2>/dev/null | sed -e 's/\(.*\)/(\1)/'
+}
+
+if [[ -z "$SSH_CONNECTION" ]]; then
+    PS1="\$ ${FG_ORANGE}\u"
+else
+    PS1="\$ ${BG_WHITE}${FG_BLACK} SSH ${RESET} ${FG_GREEN}\u"
+fi
+
+
+set -o vi
+bind 'set show-mode-in-prompt on'
+bind "set vi-cmd-mode-string \">vi\""
+bind "set vi-ins-mode-string \"\""
+
+#host 
+PS1+="${FG_GREY}|\h"
+# |dir
+PS1+="${FG_GREY}|${FG_AQUA}\w"
+# git
+PS1+="${FG_LIGHT_MAGENTA} \$(parse_git_branch) ${RESET}"
+# newline and meow
+PS1+="\n${FG_GREY}  ${RESET}"
+
+# aliases
+alias ls='ls --color=auto'
+alias la='ls --color=auto -ah'
+alias l='ls --color=auto -lh'
+alias ll='ls --color=auto -lah'
+
+alias py='python3'
+
+alias lupdate='sudo dnf update --exclude *kernel* --exclude *nvidia*'
+
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+alias zg='git checkout'
+alias zs='git status'
+alias zc='git commit'
+alias oopsie='git commit --amend'
+alias za='git add .'
+alias zac='git add . && git commit'
+alias zr='git restore --staged .'
+alias zl='git log'
+alias zd='git diff'
+alias zundo='git reset --soft HEAD~1'
+alias yoink='git pull'
+alias yeet='git push'
+
+alias watch='watch -n0.5 --color'
+alias htop='htop --readonly --sort-key PERCENT_CPU -d 10'
+alias pot='bpytop'
+alias ssh='ssh -C'
+
+alias rr='echo "Reloading bashrc" && eval $(tmux showenv -s SSH_CONNECTION) && source ~/.bashrc && echo done!'
+alias rrssh='echo "Unsetting SSH env vars and killing ssh agent" && unset SSH_AUTH_SOCK && unset SSH_AGENT_PID && keychain -k --stop all && echo done!'
+alias rrwg='echo Reload wireguard && sudo systemctl reload wg-quick@wg0.service && echo Done!'
+
+alias ippub='curl ifconfig.me && echo'
+
+alias n='nvim'
+
+# alias scripts
+# when you go uhhhhhhhgg? and you don't wanna search the web
+uh() {
+    local in=$1
+    if [[ -z $in ]]; then
+        in="$HOME/myenv"
+    fi
+
+    # Run find and fzf, filter out .git contents
+    local f
+    f=$(find "$in" -type f -not -path "*/.git/*" 2>/dev/null | sed "s|$HOME|~|" | fzf)
+
+    # for some reason ~ is not subsitued here so re-expand
+    f=$(echo $f | sed "s|^~|$HOME|")
+
+    # Show file if something was selected
+    [[ -n $f ]] && cat "$f"
+}
+
+# create session 'dev'
+# new-window: -d do not switch focus, -c change dir, -n name (useful for status bar), last param is shell command to override (default bash), multiple commands can be chained through \;
+# for the new window, keep -c as ~ so that when we manually recreate some we won't always land on dev
+dev() {
+    tmux new-session -s dev -c "~" -n "dev" \;  \
+        new-window -c ~/dev -n "cli" \;  \
+        new-window -c ~/myenv -n "myenv" \;  \
+        next-window
+}
+
+speedtestFile10="https://cachefly.cachefly.net/10mb.test"
+speedtestFile100="https://cachefly.cachefly.net/100mb.test"
+speedtest() {
+    file=$1
+    if [[ -z "$1" ]]; then
+        file=$speedtestFile100
+    fi
+    echo "Starting speed test with file $file"
+    curl -o /dev/null -s -w "%{speed_download}" $file | awk '{printf "Speed: %.2f mbits/s (base 1000) | %.2f MiB/s | %.3f GiB/h \n", $1 * 8 / 1000 / 1000, $1 / 1024 / 1024, ($1 / 1024 / 1024 / 1024) * 60 * 60}'
+}
+speedtest-10() {
+    speedtest "$speedtestFile10"
+}
+
+
+
+# PATHs
+export PATH=$PATH:/usr/local/nvim/bin
+export PATH=$PATH:$HOME/go/bin
+
+# exports
+export GIT_EDITOR=vim
+export SYSTEMD_EDITOR=vim
+export EDITOR=vim
+
+export WEB_ADDRESS=:8090
+export GOROOT=/usr/local/go/
+export GOPATH=$HOME/go

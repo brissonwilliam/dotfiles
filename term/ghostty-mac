@@ -1,0 +1,5 @@
+font-size = 15
+macos-option-as-alt = false
+quit-after-last-window-closed = true
+command = /opt/homebrew/bin/bash
+shell-integration = none
