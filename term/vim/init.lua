@@ -25,6 +25,13 @@ local function goErrCheck()
 end
 vim.keymap.set("n", "<space>e", goErrCheck, { desc = "Insert Go error check" })
 
+-- SYSTEM CLIPBOARD
+-- osc52 sends an ANSI sequence that can be forwarded all the way to the terminal
+-- emulator process  instead of directly trying to copy to the host desktop's clipboard
+-- In other words, it makes it so we can copy/paste over ssh rather than on the host wayland clipboard
+-- (neovim -> tmux -> ssh > ghostty)
+vim.g.clipboard = 'osc52'
+
 -- Setup lazy.nvim
 -- lazy mean the plugin is loaded once a plugin requires it only
 -- you can use the VeryLazy event for things that can
@@ -46,7 +53,6 @@ local plugins = {
         lazy = false,
         config = function()
             local cmp = require "cmp"
-            local lspkind = require 'lspkind'
             cmp.setup({
                 -- snippet is greyed out suggestion inline
                 snippet = {
@@ -55,7 +61,6 @@ local plugins = {
                         require('luasnip').lsp_expand(args.body)
                     end,
                 },
-                formatting = { format = lspkind.cmp_format({}) },
                 preselect = cmp.PreselectMode.None, -- no default preset
                 window = {
                     completion = cmp.config.window.bordered(),
@@ -108,6 +113,53 @@ local plugins = {
             -- variable, func, const symbols in floating window
             'onsails/lspkind.nvim',
         },
+    },
+    -- ############ HARPOON ##################
+    -- nvim-tree provides a tree-like pane to explore, edit, add or delete files
+    {
+        "ThePrimeagen/harpoon",
+        branch = "harpoon2",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-telescope/telescope.nvim",
+        },
+        config = function()
+            local harpoon = require("harpoon")
+            -- REQUIRED
+            harpoon:setup()
+
+            -- telescope extension
+            local conf = require("telescope.config").values
+            local function toggle_telescope(harpoon_files)
+                local file_paths = {}
+                for _, item in ipairs(harpoon_files.items) do
+                    table.insert(file_paths, item.value)
+                end
+
+                require("telescope.pickers").new({}, {
+                    prompt_title = "Harpoon",
+                    finder = require("telescope.finders").new_table({
+                        results = file_paths,
+                    }),
+                    previewer = conf.file_previewer({}),
+                    sorter = conf.generic_sorter({}),
+                }):find()
+            end
+            -- vim.keymap.set("n", "<Space>h", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end,{ desc = "Open harpoon window" })
+            vim.keymap.set("n", "<Space>h", function() toggle_telescope(harpoon:list()) end,
+                { desc = "Open harpoon window" })
+
+            vim.keymap.set("n", "<Space>d", function() harpoon:list():remove() end)
+            vim.keymap.set("n", "<Space>a", function() harpoon:list():add() end)
+            vim.keymap.set("n", "<Space>1", function() harpoon:list():select(1) end)
+            vim.keymap.set("n", "<Space>2", function() harpoon:list():select(2) end)
+            vim.keymap.set("n", "<Space>3", function() harpoon:list():select(3) end)
+            vim.keymap.set("n", "<Space>4", function() harpoon:list():select(4) end)
+            vim.keymap.set("n", "<Space>5", function() harpoon:list():select(5) end)
+
+            vim.keymap.set("n", "<Space>n", function() harpoon:list():prev() end)
+            vim.keymap.set("n", "<Space>b", function() harpoon:list():next() end)
+        end,
     },
     -- ############ NVIM-TREE ##################
     -- nvim-tree provides a tree-like pane to explore, edit, add or delete files
@@ -220,7 +272,7 @@ local plugins = {
     },
 
     -- ############ TELESCOPE ##################
-    -- telescope for fuzzy finding, rigrep text search and ui select action
+    -- Telescope for fuzzy finding, rigrep text search and ui select action
     {
         "nvim-telescope/telescope.nvim",
         dependencies = {
@@ -288,11 +340,14 @@ local plugins = {
         "mfussenegger/nvim-dap",
         dependencies = {
             "igorlfs/nvim-dap-view",
+            "theHamsta/nvim-dap-virtual-text",
         }
     },
 
     -- ############ AI AGENT BULLSHIT COPILOT ##################
-    -- avanta kinda like cursor but configurable xdd
+    --{
+    --    "github/copilot.vim"
+    --},
     {
         "CopilotC-Nvim/CopilotChat.nvim",
         dependencies = {
@@ -331,7 +386,7 @@ local plugins = {
             },
             separator = '━━',
             show_folds = false, -- Disable folding for cleaner look
-            sticky = {"Current buffer is #buffer", "Open buffers are #buffers", "Files: #glob"}
+            sticky = { "Current buffer is #buffer", "All files (glob): #glob" }
             -- auto_insert_mode = true, -- broken right now
         },
     },
@@ -352,10 +407,33 @@ local plugins = {
     -- git integration
     {
         'lewis6991/gitsigns.nvim',
-        opts = { sign_priority = 11 }
+        config = function()
+            local map = vim.keymap.set
+            local opts = { silent = true }
+            local gs = require("gitsigns");
+
+            map("n", "zp", function() gs.preview_hunk() end, opts)
+            map("n", "zu", function() gs.reset_hunk() end, opts)
+            map("n", "zj", function() require("gitsigns").nav_hunk("next") end, opts)
+            map("n", "zk", function() require("gitsigns").nav_hunk("prev") end, opts)
+
+        end
+        --    opts = { sign_priority = 11 }
     },
     {
         'tpope/vim-fugitive',
+        config = function ()
+            local map = vim.keymap.set
+            local opts = { silent = true }
+            map("n", "zb", ":Git blame<CR>", opts)
+            map("n", "za", ":Git add .<CR>", opts)
+            map("n", "zr", ":Git reset .<CR>", opts)
+            map("n", "zl", ":0GcLog<CR>", opts)
+            map("n", "zdd", ":horizontal rightbelow Git diff<CR>", opts)
+            map("n", "zdv", ":vertical rightbelow Git diff<CR>", opts)
+            map("n", "zdt", ":tab rightbelow Git diff<CR>", opts)
+            map("n", "zs", ":horizontal belowright Git<CR>", opts)
+        end
     },
     -- nicer input and select visuals
     {
@@ -379,7 +457,7 @@ local plugins = {
     { "sainnhe/gruvbox-material" },
     { "srcery-colors/srcery-vim", name = "srcery" },
     { "jacoborus/tender.vim" },
-    { "ellisonleao/gruvbox.nvim", config = true,   opts = { bold = false } },
+    { "ellisonleao/gruvbox.nvim", config = true,   opts = { bold = true } },
     {
         'everviolet/nvim',
         name = 'evergarden', -- 'evergarden-winter'|'evergarden-fall'|'evergarden-spring'|'evergarden-summer'
@@ -387,13 +465,6 @@ local plugins = {
             theme = {
                 variant = 'fall', -- 'winter'|'fall'|'spring'|'summer'
                 accent = 'green',
-            },
-            editor = {
-                transparent_background = false,
-                float = {
-                    color = 'mantle',
-                    solid_border = true,
-                },
             },
             style = {
                 tabline = { 'reverse' },
@@ -445,7 +516,7 @@ local plugins = {
         config = function()
             -- NOTE: you do not need to call setup if you don't want to.
             require("vague").setup({
-                bold = false
+                bold = true
             })
         end
     },
@@ -779,6 +850,7 @@ vim.diagnostic.config({
 -- ### DAP config
 local dap = require('dap')
 
+-- DAP go debug delve
 dap.adapters.delve = {
     type = 'server',
     port = '${port}',
@@ -787,7 +859,6 @@ dap.adapters.delve = {
         args = { 'dap', '-l', '127.0.0.1:${port}', '--log', '--log-output="dap"' },
     }
 }
-
 dap.adapters.delveattach = {
     type = "server",
     host = "127.0.0.1",

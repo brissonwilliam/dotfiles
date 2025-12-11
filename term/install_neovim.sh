@@ -6,7 +6,7 @@ sudo echo "Making sure you're sudo"
 
 echo
 echo "Installing Neovim"
-curl "https://github.com/neovim/neovim/releases/download/v0.11.4/nvim-linux-x86_64.tar.gz" -L > ./nvim.tar.gz
+curl -# "https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-x86_64.tar.gz" -L > ./nvim.tar.gz
 tar xzf nvim.tar.gz 
 mv nvim-linux-x86_64 nvim
 sudo rm -rf /usr/local/nvim

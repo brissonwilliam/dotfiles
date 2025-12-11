@@ -24,7 +24,7 @@ nnoremap <Space>yy "+yy
 nnoremap <Space>Y "+Y
 
 " copy relpath to clipbaord
-nnoremap <Space>5 :let @+ = expand('%')<CR>
+nnoremap <Space>p :let @+ = expand('%')<CR>
 
 " move blocks in visual mode with indent
 vnoremap J :m '>+1<CR>gv=gv
@@ -33,6 +33,10 @@ vnoremap K :m '<-2<CR>gv=gv
 " keep code centered when moving in file
 nnoremap <C-u> <C-u>z.
 nnoremap <C-d> <C-d>z.
+
+" display invisible characters
+" activate with "set list" and "set nolist"
+set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:␣
 
 " z<CR> to navigate to top of screen
 " z. to navigate to middle of screen
@@ -266,20 +270,6 @@ if has('nvim')
 
 	lua require("init")
 
-	" git
-	nnoremap zb :Git blame<CR>
-	nnoremap zp :lua require'gitsigns'.preview_hunk()<CR>
-	nnoremap zu :lua require'gitsigns'.reset_hunk()<CR>
-	nnoremap za :Git add .<CR>
-	nnoremap zr :Git reset .<CR>
-	nnoremap zl :0GcLog<CR>
-	nnoremap zdd :horizontal rightbelow Git diff<CR>
-	nnoremap zdv :vertical rightbelow Git diff<CR>
-	nnoremap zdt :tab rightbelow Git diff<CR>
-	nnoremap zs :horizontal belowright Git<CR>
-	nnoremap zj :lua require'gitsigns'.nav_hunk('next')<CR>
-	nnoremap zk :lua require'gitsigns'.nav_hunk('prev')<CR>
-
 	" debug
 	nnoremap <C-b>b :DapToggleBreakpoint<CR>
 	nnoremap <C-b><C-b> :DapToggleBreakpoint<CR>
@@ -338,12 +328,13 @@ if has('nvim')
     nnoremap <Space><Esc> :CopilotChatStop<CR>
 
 
-    " nnoremap <Space>e :Copilot enable<CR>
-    " imap <silent><script><expr> <C-a> copilot#Accept("\<CR>")
-    " let g:copilot_no_tab_map = v:true
-    " imap <C-L> <Plug>(copilot-next)
-    " imap <C-H> <Plug>(copilot-previous)
-    " imap <C-W> <Plug>(copilot-accept-word)
+    nnoremap <Space>e :Copilot enable<CR>
+    nnoremap <Space>E :Copilot disable<CR>
+    imap <silent><script><expr> <C-a> copilot#Accept("\<CR>")
+    let g:copilot_no_tab_map = v:true
+    imap <C-k> <Plug>(copilot-next)
+    imap <C-j> <Plug>(copilot-previous)
+    imap <C-w> <Plug>(copilot-accept-word)
 
 endif
 

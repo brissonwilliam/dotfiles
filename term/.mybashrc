@@ -2,6 +2,17 @@
 
 # Make sure to source this shite in ~/.bashrc
 
+# Show all suggestions on each autocomplete
+bind 'set show-all-if-ambiguous on'
+# Cycle through autocomplete (rather than stop at last common character)
+bind 'TAB:menu-complete'
+
+# Enable vim like motions
+set -o vi
+bind 'set show-mode-in-prompt on'
+bind "set vi-cmd-mode-string \">vi\""
+bind "set vi-ins-mode-string \"\""
+
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
     xterm-color|xterm-ghostty|*-256color|xterm-kitty) color_prompt=yes;;
@@ -133,11 +144,6 @@ else
 fi
 
 
-set -o vi
-bind 'set show-mode-in-prompt on'
-bind "set vi-cmd-mode-string \">vi\""
-bind "set vi-ins-mode-string \"\""
-
 #host 
 PS1+="${FG_GREY}|\h"
 # |dir
@@ -181,7 +187,8 @@ alias ssh='ssh -C'
 
 alias rr='echo "Reloading bashrc" && eval $(tmux showenv -s SSH_CONNECTION) && source ~/.bashrc && echo done!'
 alias rrssh='echo "Unsetting SSH env vars and killing ssh agent" && unset SSH_AUTH_SOCK && unset SSH_AGENT_PID && keychain -k --stop all && echo done!'
-alias rrwg='echo Reload wireguard && sudo systemctl reload wg-quick@wg0.service && echo Done!'
+alias rrwg='echo Reload wireguard && sudo wg-quick down wg0 && sudo wg-quick up wg0 && echo Done!'
+alias rrdesk='echo "reloading desktop database & rofi cache" && sudo update-desktop-database && rm ~/.cache/rofi-drun-desktop.cache'
 
 alias ippub='curl ifconfig.me && echo'
 
@@ -210,8 +217,13 @@ uh() {
 # new-window: -d do not switch focus, -c change dir, -n name (useful for status bar), last param is shell command to override (default bash), multiple commands can be chained through \;
 # for the new window, keep -c as ~ so that when we manually recreate some we won't always land on dev
 dev() {
-    tmux new-session -s dev -c "~" -n "dev" \;  \
-        new-window -c ~/dev -n "cli" \;  \
+    devDir="$HOME/dev/$1"
+    session="dev"
+    if [ ! -z "$2" ]; then
+        session="$2"
+    fi
+    tmux new-session -s $session -c $devDir -n "dev" \;  \
+        new-window -c $devDir -n "cli" \;  \
         new-window -c ~/myenv -n "myenv" \;  \
         next-window
 }
@@ -244,3 +256,5 @@ export EDITOR=vim
 export WEB_ADDRESS=:8090
 export GOROOT=/usr/local/go/
 export GOPATH=$HOME/go
+
+export GEMINI_SANDBOX=true
